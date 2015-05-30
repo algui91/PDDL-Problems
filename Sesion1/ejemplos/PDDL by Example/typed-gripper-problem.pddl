@@ -6,7 +6,10 @@
     ball1 ball2 ball3 ball4 - ball
     left right - gripper)
 
+  (:metric minimize (total-cost))
+
   (:init
+      (= (total-cost) 0)
       (at-robby rooma)
       (free left)
       (free right)

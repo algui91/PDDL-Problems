@@ -1,6 +1,6 @@
 (define (domain typed-gripper)
 
-  (:requirements :typing)
+  (:requirements :typing :action-costs)
   (:types room ball gripper)
   (:constants left right - gripper)
 
@@ -11,12 +11,17 @@
     (carry ?o - ball ?g - gripper) ;; true if o is a ball, g a gripper and g holds o
   )
 
+  (:functions
+    (total-cost)
+  )
+
   ;; The robot can move from ?from to ?to
   (:action move
     :parameters (?from ?to - room)
     :precondition (at-robby ?from)
     :effect (and (at-robby ?to)
-                 (not (at-robby ?from)))
+                 (not (at-robby ?from))
+                 (increase (total-cost) 10))
   )
 
   ;; The robot can pick up ?obj in ?room with ?gripper
@@ -24,7 +29,8 @@
     :parameters (?obj - ball ?room - room ?gripper - gripper)
     :precondition (and (at ?obj ?room) (at-robby ?room) (free ?gripper))
     :effect (and (carry ?obj ?gripper ) (not (at ?obj ?room))
-    (not (free ?gripper)))
+            (not (free ?gripper))
+            (increase (total-cost) 1))
   )
 
   ;; The robot can drop ?obj in ?room from ?gripper
@@ -32,6 +38,7 @@
     :parameters (?obj - ball ?room - room ?gripper - gripper)
     :precondition (and (carry ?obj ?gripper) (at-robby ?room))
     :effect (and (at ?obj ?room) (free ?gripper)
-    (not (carry ?obj ?gripper)))
+    (not (carry ?obj ?gripper))
+    (increase (total-cost) 1))
   )
 )
