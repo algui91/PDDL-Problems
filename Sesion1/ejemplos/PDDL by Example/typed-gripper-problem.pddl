@@ -1,7 +1,7 @@
-(define (problem strips-gripper2)
+(define (problem typed-gripper)
 
-  (:domain gripper-strips)
-  (:objects r
+  (:domain typed-gripper)
+  (:objects
     rooma roomb - room
     ball1 ball2 ball3 ball4 - ball
     left right - gripper)
