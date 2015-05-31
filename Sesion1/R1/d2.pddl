@@ -66,7 +66,7 @@
   (:action charge
     :parameters (?r - robot)
     :precondition (< (battery-left ?r ) 2)
-    :effect (assign (battery-left ?r ) 2)
+    :effect (assign (battery-left ?r ) 10)
   )
 
 )
