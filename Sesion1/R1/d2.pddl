@@ -18,9 +18,6 @@
 
 		;; El robot lleva al paquete
     (carry ?p - paquete ?r - robot)
-
-    ;; Bateria
-    ;(change ?n1 ?n2 - battery-level)
   )
 
   (:functions
@@ -68,8 +65,8 @@
 
   (:action charge
     :parameters (?r - robot)
-    :precondition (= (battery-left ?r ) 0)
-    :effect (assign (battery-left ?r ) 10)
+    :precondition (< (battery-left ?r ) 2)
+    :effect (assign (battery-left ?r ) 2)
   )
 
 )
