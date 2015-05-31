@@ -1,0 +1,429 @@
+%%% LaTeX Template: Two column article
+%%%
+%%% Source: http://www.howtotex.com/
+%%% Feel free to distribute this template, but please keep to referal to http://www.howtotex.com/ here.
+%%% Date: February 2011
+
+%%% Preamble
+\documentclass[	DIV=calc,%
+							paper=a4,%
+							fontsize=11pt]{scrartcl}	 					% KOMA-article class
+
+\usepackage[spanish]{babel}										% English language/hyphenation
+\usepackage[protrusion=true,expansion=true]{microtype}				% Better typography
+\usepackage{amsmath,amsfonts,amsthm}					% Math packages
+%\usepackage[pdftex]{graphicx}									% Enable pdflatex
+\usepackage[svgnames]{xcolor}									% Enabling colors by their 'svgnames'
+\usepackage[hang, small,labelfont=bf,up,textfont=it,up]{caption}	% Custom captions under/above floats
+\usepackage{epstopdf}												% Converts .eps to .pdf
+\usepackage{subfig}													% Subfigures
+\usepackage{booktabs}												% Nicer tables
+\usepackage{fix-cm}													% Custom fontsizes
+\usepackage[utf8]{inputenc}
+\usepackage{hyperref}
+
+%%% Custom sectioning (sectsty package)
+\usepackage{sectsty}													% Custom sectioning (see below)
+\allsectionsfont{%															% Change font of al section commands
+	\usefont{OT1}{phv}{b}{n}%										% bch-b-n: CharterBT-Bold font
+	}
+
+\sectionfont{%																% Change font of \section command
+	\usefont{OT1}{phv}{b}{n}%										% bch-b-n: CharterBT-Bold font
+	}
+
+%%% Headers and footers
+\usepackage{fancyhdr}												% Needed to define custom headers/footers
+	\pagestyle{fancy}														% Enabling the custom headers/footers
+\usepackage{lastpage}
+
+% Header (empty)
+\lhead{}
+\chead{}
+\rhead{}
+% Footer (you may change this to your own needs)
+\lfoot{\footnotesize \texttt{Alejandro Alcalde Barros} \textbullet ~}
+\cfoot{}
+\rfoot{\footnotesize página \thepage\ de \pageref{LastPage}}	% "Page 1 of 2"
+\renewcommand{\headrulewidth}{0.0pt}
+\renewcommand{\footrulewidth}{0.4pt}
+
+
+
+%%% Creating an initial of the very first character of the content
+\usepackage{lettrine}
+\newcommand{\initial}[1]{%
+     \lettrine[lines=3,lhang=0.3,nindent=0em]{
+     				\color{DarkGoldenrod}
+     				{\textsf{#1}}}{}}
+
+
+
+%%% Title, author and date metadata
+\usepackage{titling}															% For custom titles
+
+\newcommand{\HorRule}{\color{DarkGoldenrod}%			% Creating a horizontal rule
+									  	\rule{\linewidth}{1pt}%
+										}
+
+\pretitle{\vspace{-30pt} \begin{flushleft} \HorRule
+				\fontsize{50}{50} \usefont{OT1}{phv}{b}{n} \color{DarkRed} \selectfont
+				}
+\title{Memoria Relación de Ejercicios PDDL}					% Title of your article goes here
+\posttitle{\par\end{flushleft}\vskip 0.5em}
+
+\preauthor{\begin{flushleft}
+					\large \lineskip 0.5em \usefont{OT1}{phv}{b}{sl} \color{DarkRed}}
+\author{Alejandro Alcalde, }											% Author name goes here
+\postauthor{\footnotesize \usefont{OT1}{phv}{m}{sl} \color{Black}
+					Universidad de Granada 								% Institution of author
+					\par\end{flushleft}\HorRule}
+
+\date{\textit{\today}}																				% No date
+
+
+\usepackage{minted}
+
+\newminted{bash}{
+		numbersep=5pt,
+		autogobble=true,
+		frame=lines,
+		framesep=2mm,
+		fontsize=\scriptsize,
+		tabsize=2,
+}
+
+\newminted{newlisp}{
+		numbersep=5pt,
+		autogobble=true,
+		frame=lines,
+		framesep=2mm,
+		fontsize=\scriptsize,
+		tabsize=2,
+}
+
+\newmintedfile[myLisp]{newlisp}{
+    linenos,
+    numbersep=5pt,
+		autogobble=true,
+    frame=lines,
+    framesep=2mm,
+    fontsize=\scriptsize,
+		tabsize=2,
+}
+\newmintinline{newlisp}{fontsize=\scriptsize}
+
+\newcommand{\lispscript}[2]{
+    \myLisp[label=#2]{#1}
+}
+
+%%% Begin document
+\begin{document}
+\maketitle
+\thispagestyle{fancy} 			% Enabling the custom headers/footers for the first page
+% The first character should be within \initial{}
+\initial{E}\textbf{n ésta memoria se describe cómo se han planteado, y resuelto, los distintos problemas propuestos sobre PDDL en la asignatura Técnicas de los Sisteas Inteligentes.}
+
+\section{Ejericio 1}
+
+\textit{Escribir un dominio de planificación en PDDL para que un planificador pueda encontrar planes de actuación para uno o varios robots como
+soluciones a problemas de distribución de paquetes entre habitaciones.}
+
+\subsection{Representación de los objetos}
+
+Para representar los objetos en éste dominio, se ha usado herencia. Para ello, se definió un \newlispinline/ojetofisico/, extendiendo de \newlispinline/object/. \newlispinline/cosas/ extiende de \newlispinline/objetofisico/, éstas \newlispinline/cosas/, serán los paquetes y los robots.
+
+\subsection{Predicados}
+
+Se han definido los siguientes predicados:
+
+\begin{itemize}
+
+	\item \newlispinline/(at ?r - objetofisico ?h - habitacion)/: Verdadero sii \newlispinline/?r/ es un \newlispinline/objetofisico/, \newlispinline/?h/ es una \newlispinline/habitacion/ y el objeto \newlispinline/?r/ está en la habitación \newlispinline/?h/. Para poder reutilzar éste predicado para indicar que, tanto un paquete, como un robot, están en una habitación, el tipo de objeto que se requiere es de tipo \newlispinline/objetofisico/, ya que \newlispinline/paquete, robot/ extienden de \newlispinline/cosas/, que a su vez extiende de \newlispinline/objetofisico/. Por tanto al predicado \newlispinline/at/ podremos pasarle como primer parámetro tanto un paquete como un robot.
+
+	\item \newlispinline/(conectada ?h1 - habitacion ?h2 - habitacion)/: Verdadero sii \newlispinline/?h1/ y \newlispinline/?h2/ son \newlispinline/habitaciones/ y están conectadas.
+
+	\item \newlispinline/(free ?r - robot)/: Verdadero sii \newlispinline/?r/ es un \newlispinline/robot/, y el robot \newlispinline/?r/ está libre, es decir, puede coger un paquete.
+
+	\item \newlispinline/(carry ?p - paquete ?r - robot)/: Verdadero sii \newlispinline/?p/ es un \newlispinline/paquete/, \newlispinline/?r/ un \newlispinline/robot/ y el robot \newlispinline/?r/ lleva el \newlispinline/paquete ?p/.
+\end{itemize}
+
+\subsection{Acciones}
+
+	Las acciones posibles en el dominio son:
+
+	\begin{itemize}
+		\item \newlispinline/move/: Representa la posibilidad de que el robot se mueva entre habitaciones.
+		\begin{itemize}
+			\item Parámetros: \newlispinline/(?r - robot ?from ?to - habitacion)/.
+			\item Precondiciones: \newlispinline/(at ?r ?from),(conectada ?from ?to)/, que el robot \newlispinline/?r/ esté en la habitación de partida
+			\newlispinline/?from/, y que ésta última esté conectada con la habitación \newlispinline/?to/.
+			\item Efectos: \newlispinline/(at ?r ?to), (not (at ?r ?from))/, el robot \newlispinline/?r/ estará en la habitación \newlispinline/?to/, y dejará de estar en la habitación \newlispinline/?from/.
+		\end{itemize}
+		\item \newlispinline/pick/: Representa la posibilidad de que el robot coja un objeto de la habitación, en éste caso un paquete.
+		\begin{itemize}
+			\item Parámetros: \newlispinline/(?obj - paquete ?h - habitacion ?r - robot)/.
+			\item Precondiciones: \newlispinline/(at ?obj ?h), (at ?r ?h), (free ?r)/. El objeto \newlispinline/?obj/ a coger está en la habitación
+			 \newlispinline/?h/, al igual que el robot \newlispinline/?r/. El robot \newlispinline/?r/ está libre para coger el objeto.
+			\item Efectos: \newlispinline/(carry ?obj ?r), (not (at ?obj ?h)), (not (free ?r))/. El robot \newlispinline/?r/ lleva el objeto \newlispinline/?obj/, el objeto ya no se encuentra en la habitación \newlispinline/?h/ y el robot \newlispinline/?r/ ya no está libre.
+		\end{itemize}
+		\item \newlispinline/drop/: Representa la posibilidad de que el robot deje un objeto en una habitación.
+		\begin{itemize}
+			\item Parámetros: \newlispinline/(?obj - paquete ?h - habitacion ?r - robot)/.
+			\item Precondiciones: \newlispinline/(carry ?obj ?r), (at ?r ?h)/. El robot \newlispinline/?r/ lleva al objeto \newlispinline/?obj/ y el robot
+			está en la habitación \newlispinline/?h/.
+			\item Efectos: \newlispinline/(at ?obj ?h), (free ?r), (not (carry ?obj ?r))/. El el objeto \newlispinline/?obj/ está en la habitación \newlispinline/?h/, el robot \newlispinline/?r/ está libre y ya no lleva al objeto \newlispinline/?obj/.
+		\end{itemize}
+	\end{itemize}
+
+A continuación se muestra el fichero con el código fuente.
+
+\lispscript{../d1.pddl}{Dominio1.pddl}
+
+\subsection{Problemas}
+
+Para éste ejercicio se han diseñado dos tipos de problemas, el primero más sencillo, con un solo robot, dos paquetes y tres habitaciones. Las habitaciones conectadas son la primera con la segunda, y la segunda con la tercera. A continuación se muestra la definición del problema:
+
+\lispscript{../p0e1.pddl}{p0e1.pddl}
+
+La ejecución de FF muestra el siguiente plan:
+
+\begin{bashcode}
+	        0: PICK P1 HAB0 R1
+	        1: MOVE R1 HAB0 HAB1
+	        2: MOVE R1 HAB1 HAB2
+	        3: DROP P1 HAB2 R1
+	        4: PICK P2 HAB2 R1
+	        5: MOVE R1 HAB2 HAB1
+	        6: MOVE R1 HAB1 HAB0
+	        7: DROP P2 HAB0 R1
+	        8: MOVE R1 HAB0 HAB1
+\end{bashcode}
+
+El segundo problema tiene dos robots, dos paquetes y tres habitaciones, contectadas igual que el problema anterior.
+
+\lispscript{../p1e1.pddl}{p1e1.pddl}
+
+El plan calculado es:
+
+\begin{bashcode}
+	        0: PICK P2 HAB2 R2
+	        1: PICK P1 HAB0 R1
+	        2: MOVE R1 HAB0 HAB1
+	        3: MOVE R2 HAB2 HAB1
+	        4: MOVE R2 HAB1 HAB0
+	        5: DROP P2 HAB0 R2
+	        6: MOVE R2 HAB0 HAB1
+	        7: MOVE R1 HAB1 HAB2
+	        8: DROP P1 HAB2 R1
+	        9: MOVE R1 HAB2 HAB1
+\end{bashcode}
+
+\section{Ejercicio 2}
+
+\textit{Escribir un dominio de planificación en PDDL, modificando el dominio del anterior
+ejercicio, de tal manera que se tenga en cuenta que la acción de moverse de una
+habitación a otra consume una cantidad de batería y, por tanto, requiere que el robot
+tenga nivel de batería para moverse. Además, considerar que hay una nueva acción de
+carga de batería que permite reponer la batería. Considerar para ello que se ha
+definido un predicado (cambio n1 n2 – nivelbat) que representa un cambio en el nivel
+de batería desde un nivel n1 a un nivel n2. En En el material de esta sesión de prácticas
+hay un fichero ejemplo de un problema para este tipo de dominio.}
+
+\subsection{Dominio}
+\label{sub:Dominio}
+
+Éste dominio se ha especificado haciendo uso de funciones, (\newlispinline/:functions/). Para ello, se ha modificado el dominio1, añadiendo la siguiente función:
+
+\begin{newlispcode}
+	(:functions
+		(battery-left ?r - robot)
+	)
+\end{newlispcode}
+
+Que devolverá la cantidad de batería disponible.
+
+Además, la acción \newlispinline/move/ se ha modificado para que modifique el nivel de batería de un robot, en su precondición se exige que el nivel de batería tenga un valor mínimo \newlispinline/(>= (battery-left ?r) 2)/, y como efecto, se decrementa el nivel de batería en un valor \newlispinline/(decrease (battery-left ?r) 2)/.
+
+Cuando el nivel de batería no permite al robot moverse, éste puede recargar la batería con la acción \newlispinline/charge/:
+
+\begin{newlispcode}
+  (:action charge
+    :parameters (?r - robot)
+    :precondition (< (battery-left ?r ) 2)
+    :effect (assign (battery-left ?r ) 10)
+  )
+\end{newlispcode}
+
+Ésta acción requiere que el nivel de batería sea menor que 2, y asigna un valor de 10 a la carga.
+
+El código completo del dominio es:
+
+\lispscript{../d2.pddl}{Dominio2.pddl}
+
+\subsection{Problema}
+\label{sub:Problema}
+
+El problema definido para éste dominio consiste en 2 robots, 10 paquetes y 4 habitaciones. Los niveles de batería de ambos robots están inicializados a 1.
+
+\lispscript{../p1e2.pddl}{p1e2.pddl}
+
+El plan generado:
+
+\begin{bashcode}
+	        0: CHARGE R2
+	        1: CHARGE R1
+	        2: MOVE R1 HAB0 HAB1
+	        3: MOVE R2 HAB0 HAB1
+	        4: MOVE R1 HAB1 HAB2
+	        5: MOVE R2 HAB1 HAB0
+	        6: MOVE R1 HAB2 HAB1
+	        7: PICK P1 HAB0 R2
+	        8: MOVE R2 HAB0 HAB1
+	        9: MOVE R2 HAB1 HAB2
+	       10: DROP P1 HAB2 R2
+	       11: MOVE R1 HAB1 HAB2
+	       12: PICK P6 HAB2 R2
+	       13: MOVE R2 HAB2 HAB1
+	       14: CHARGE R2
+	       15: MOVE R2 HAB1 HAB0
+	       16: DROP P6 HAB0 R2
+	       17: MOVE R2 HAB0 HAB1
+	       18: MOVE R2 HAB1 HAB0
+	       19: PICK P2 HAB0 R2
+	       20: MOVE R2 HAB0 HAB1
+	       21: MOVE R2 HAB1 HAB2
+	       22: DROP P2 HAB2 R2
+	       23: PICK P7 HAB2 R1
+	       24: MOVE R1 HAB2 HAB1
+	       25: CHARGE R1
+	       26: MOVE R1 HAB1 HAB0
+	       27: DROP P7 HAB0 R1
+	       28: PICK P3 HAB0 R1
+	       29: MOVE R1 HAB0 HAB1
+	       30: MOVE R1 HAB1 HAB2
+	       31: DROP P3 HAB2 R1
+	       32: PICK P8 HAB2 R1
+	       33: MOVE R1 HAB2 HAB1
+	       34: MOVE R1 HAB1 HAB0
+	       35: CHARGE R1
+	       36: DROP P8 HAB0 R1
+	       37: PICK P4 HAB0 R1
+	       38: MOVE R1 HAB0 HAB1
+	       39: MOVE R1 HAB1 HAB2
+	       40: DROP P4 HAB2 R1
+	       41: PICK P9 HAB2 R1
+	       42: MOVE R1 HAB2 HAB1
+	       43: MOVE R1 HAB1 HAB0
+	       44: DROP P9 HAB0 R1
+	       45: PICK P5 HAB0 R1
+	       46: MOVE R1 HAB0 HAB1
+	       47: CHARGE R1
+	       48: MOVE R1 HAB1 HAB2
+	       49: DROP P5 HAB2 R1
+	       50: PICK P10 HAB2 R1
+	       51: MOVE R1 HAB2 HAB1
+	       52: MOVE R1 HAB1 HAB0
+	       53: DROP P10 HAB0 R1
+	       54: MOVE R1 HAB0 HAB1
+	       55: MOVE R1 HAB1 HAB2
+\end{bashcode}
+
+\section{Ejercicio 3}
+\label{sec:Ejercicio 3}
+
+\textit{Escribir un dominio de planificación en PDDL, modificando el dominio del anterior
+ejercicio, de manera que se puedan utilizar ahora dos acciones diferentes, moverse
+rápido y moverse lento tales que moverse rápido consume más unidades de fuel que
+moverse lento. Probarlo con varios problemas.}
+
+\subsection{Dominio}
+\label{sub:Dominio}
+
+Éste problema es una extensión del anterior, simplemente se ha añadido una acción \newlispinline/move-fast/ que consume más unidades de batería:
+
+\begin{newlispcode}
+  (:action move-fast
+    :parameters (?r - robot ?from ?to - habitacion)
+    :precondition (and
+                    (at ?r ?from)
+                    (conectada ?from ?to)
+                    (>= (battery-left ?r) 10)
+                    )
+    :effect (and
+              (at ?r ?to)
+              (not (at ?r ?from))
+              (decrease (battery-left ?r) 10))
+  )
+\end{newlispcode}
+
+\subsection{Problema}
+\label{sub:Problema}
+
+El ejemplo de problema usado en éste caso tiene 3 robots, 10 paquetes y 4 habitaciones, los niveles de batería inicialmente son 100.
+
+\lispscript{../p1e3.pddl}{p1e3.pddl}
+
+Y el plan generado:
+
+\begin{bashcode}
+	        0: PICK P9 HAB4 R3
+	        1: MOVE-FAST R3 HAB4 HAB3
+	        2: MOVE-FAST R1 HAB0 HAB1
+	        3: MOVE-FAST R2 HAB0 HAB1
+	        4: MOVE R1 HAB1 HAB2
+	        5: MOVE-FAST R3 HAB3 HAB1
+	        6: DROP P9 HAB1 R3
+	        7: MOVE-FAST R3 HAB1 HAB3
+	        8: MOVE-FAST R3 HAB3 HAB4
+	        9: PICK P9 HAB1 R2
+	       10: MOVE R2 HAB1 HAB0
+	       11: DROP P9 HAB0 R2
+	       12: MOVE-FAST R2 HAB0 HAB1
+	       13: MOVE R2 HAB1 HAB0
+	       14: MOVE R1 HAB2 HAB1
+	       15: PICK P1 HAB0 R2
+	       16: MOVE-FAST R2 HAB0 HAB1
+	       17: MOVE R2 HAB1 HAB2
+	       18: DROP P1 HAB2 R2
+	       19: MOVE R1 HAB1 HAB2
+	       20: PICK P6 HAB2 R2
+	       21: MOVE R2 HAB2 HAB1
+	       22: MOVE R2 HAB1 HAB0
+	       23: DROP P6 HAB0 R2
+	       24: MOVE-FAST R2 HAB0 HAB1
+	       25: MOVE R2 HAB1 HAB0
+	       26: MOVE R1 HAB2 HAB1
+	       27: PICK P2 HAB0 R2
+	       28: MOVE-FAST R2 HAB0 HAB1
+	       29: MOVE R2 HAB1 HAB2
+	       30: DROP P2 HAB2 R2
+	       31: MOVE R1 HAB1 HAB2
+	       32: PICK P7 HAB2 R2
+	       33: MOVE R2 HAB2 HAB1
+	       34: MOVE R2 HAB1 HAB0
+	       35: DROP P7 HAB0 R2
+	       36: MOVE-FAST R2 HAB0 HAB1
+	       37: MOVE R2 HAB1 HAB0
+	       38: PICK P3 HAB0 R2
+	       39: MOVE-FAST R2 HAB0 HAB1
+	       40: MOVE-FAST R2 HAB1 HAB2
+	       41: DROP P3 HAB2 R2
+	       42: PICK P8 HAB2 R1
+	       43: MOVE R1 HAB2 HAB1
+	       44: MOVE R1 HAB1 HAB0
+	       45: DROP P8 HAB0 R1
+	       46: PICK P4 HAB0 R1
+	       47: MOVE-FAST R1 HAB0 HAB1
+	       48: MOVE R1 HAB1 HAB2
+	       49: DROP P4 HAB2 R1
+	       50: PICK P10 HAB2 R1
+	       51: MOVE R1 HAB2 HAB1
+	       52: MOVE R1 HAB1 HAB0
+	       53: DROP P10 HAB0 R1
+	       54: PICK P5 HAB0 R1
+	       55: MOVE-FAST R1 HAB0 HAB1
+	       56: MOVE R1 HAB1 HAB2
+	       57: DROP P5 HAB2 R1
+\end{bashcode}
+\end{document}
