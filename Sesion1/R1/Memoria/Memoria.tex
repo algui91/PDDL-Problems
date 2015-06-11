@@ -81,6 +81,9 @@
 
 \date{\textit{\today}}																				% No date
 
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[light,math]{kurier}
 
 \usepackage{minted}
 
@@ -110,8 +113,9 @@
     framesep=2mm,
     fontsize=\scriptsize,
 		tabsize=2,
+		% fontfamily=kurier,
 }
-\newmintinline{newlisp}{fontsize=\scriptsize}
+\newmintinline{newlisp}{fontsize=\scriptsize, fontfamily=kurier}
 
 \newcommand{\lispscript}[2]{
     \myLisp[label=#2]{#1}

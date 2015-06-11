@@ -7,7 +7,6 @@
 	hab0 - habitacion
 	hab1 - habitacion
 	hab2 - habitacion
-
 	)
 (:init
 	(at r1 hab0)
