@@ -237,38 +237,24 @@ hay un fichero ejemplo de un problema para este tipo de dominio.}
 \subsection{Dominio}
 \label{sub:Dominio}
 
-Éste dominio se ha especificado haciendo uso de funciones, (\newlispinline/:functions/). Para ello, se ha modificado el dominio1, añadiendo la siguiente función:
+En éste dominio se ha definido un nuevo objeto \newlispinline/flevel/, que representará los niveles de batería del robot.
 
-\begin{newlispcode}
-	(:functions
-		(battery-left ?r - robot)
-	)
-\end{newlispcode}
+Además, se han añadido dos predicados nuevos, \newlispinline/cambio( ?n1 ?n2 - flevel)/ y \newlispinline/(batterylevel ?r - robot ?f - flevel)/. El primero realizará el cambio de una batería por otra. El segundo especifica el nivel de batería del robot \newlispinline/?r/.
 
-Que devolverá la cantidad de batería disponible.
+En la acción \newlispinline/move/:
 
-Además, la acción \newlispinline/move/ se ha modificado para que modifique el nivel de batería de un robot, en su precondición se exige que el nivel de batería tenga un valor mínimo \newlispinline/(>= (battery-left ?r) 2)/, y como efecto, se decrementa el nivel de batería en un valor \newlispinline/(decrease (battery-left ?r) 2)/.
+\begin{itemize}
+	\item En los parámetros se pasan dos niveles de batería. Uno de ellos especifica el nivel de batería del robot antes de moverse, el otro el nivel de batería que tendrá el robot tras ejecutar la acción.
+	\item Como precondiciones, se ha añadido \newlispinline/(batterylevel ?r ?bbefore)/, especifica que el nivel de batería del robot antes de ejecutar la acción debe ser \newlispinline/?bbefore/. \newlispinline/(cambio ?bbefore ?bafter)/ cambiará el nivel de batería.
+	\item Como efecto, \newlispinline/(not (batterylevel ?r ?bbefore))/ establece que el nivel de batería del robot ya no es el mismo que tenía antes de ejecutar la acción, y \newlispinline/(batterylevel ?r ?bafter)/ establece el nivel actual a \newlispinline/?bafter/
+\end{itemize}
 
-Cuando el nivel de batería no permite al robot moverse, éste puede recargar la batería con la acción \newlispinline/charge/:
-
-\begin{newlispcode}
-  (:action charge
-    :parameters (?r - robot)
-    :precondition (< (battery-left ?r ) 2)
-    :effect (assign (battery-left ?r ) 10)
-  )
-\end{newlispcode}
-
-Ésta acción requiere que el nivel de batería sea menor que 2, y asigna un valor de 10 a la carga.
-
-El código completo del dominio es:
-
-\lispscript{../d2.pddl}{Dominio2.pddl}
+\lispscript{../d2.1.pddl}{Dominio2.pddl}
 
 \subsection{Problema}
 \label{sub:Problema}
 
-El problema definido para éste dominio consiste en 2 robots, 10 paquetes y 4 habitaciones. Los niveles de batería de ambos robots están inicializados a 1.
+El problema definido para éste dominio consiste en 2 robots, 10 paquetes y 4 habitaciones. Los niveles de batería para los dos robots es \newlispinline/fl2/.
 
 \lispscript{../p1e2.pddl}{p1e2.pddl}
 
@@ -347,87 +333,154 @@ moverse lento. Probarlo con varios problemas.}
 Éste problema es una extensión del anterior, simplemente se ha añadido una acción \newlispinline/move-fast/ que consume más unidades de batería:
 
 \begin{newlispcode}
-  (:action move-fast
-    :parameters (?r - robot ?from ?to - habitacion)
-    :precondition (and
-                    (at ?r ?from)
-                    (conectada ?from ?to)
-                    (>= (battery-left ?r) 10)
-                    )
-    :effect (and
-              (at ?r ?to)
-              (not (at ?r ?from))
-              (decrease (battery-left ?r) 10))
-  )
+	(:action move-fast
+	  :parameters (?r - robot ?from ?to - habitacion ?bbefore ?bafter - flevel)
+	  :precondition (and
+	                  (at ?r ?from)
+	                  (conectada ?from ?to)
+	                  (batterylevel ?r ?bbefore)
+	                  (cambio-fast ?bbefore ?bafter))
+
+	  :effect (and
+	            (at ?r ?to)
+	            (not (at ?r ?from))
+	            (not (batterylevel ?r ?bbefore) )
+	            (batterylevel ?r ?bafter)
+	            )
+	)
 \end{newlispcode}
+
+Y un predicado \newlispinline/(cambio-fast ?n1 ?n2 - flevel)/.
 
 \subsection{Problema}
 \label{sub:Problema}
 
-El ejemplo de problema usado en éste caso tiene 3 robots, 10 paquetes y 4 habitaciones, los niveles de batería inicialmente son 100.
+El problema tiene un robot, y los niveles de batería del 0 al 2.
 
-\lispscript{../p1e3.pddl}{p1e3.pddl}
+\lispscript{../p0e3.pddl}{p0e3.pddl}
 
 Y el plan generado:
 
 \begin{bashcode}
-	        0: PICK P9 HAB4 R3
-	        1: MOVE-FAST R3 HAB4 HAB3
-	        2: MOVE-FAST R1 HAB0 HAB1
-	        3: MOVE-FAST R2 HAB0 HAB1
-	        4: MOVE R1 HAB1 HAB2
-	        5: MOVE-FAST R3 HAB3 HAB1
-	        6: DROP P9 HAB1 R3
-	        7: MOVE-FAST R3 HAB1 HAB3
-	        8: MOVE-FAST R3 HAB3 HAB4
-	        9: PICK P9 HAB1 R2
-	       10: MOVE R2 HAB1 HAB0
-	       11: DROP P9 HAB0 R2
-	       12: MOVE-FAST R2 HAB0 HAB1
-	       13: MOVE R2 HAB1 HAB0
-	       14: MOVE R1 HAB2 HAB1
-	       15: PICK P1 HAB0 R2
-	       16: MOVE-FAST R2 HAB0 HAB1
-	       17: MOVE R2 HAB1 HAB2
-	       18: DROP P1 HAB2 R2
-	       19: MOVE R1 HAB1 HAB2
-	       20: PICK P6 HAB2 R2
-	       21: MOVE R2 HAB2 HAB1
-	       22: MOVE R2 HAB1 HAB0
-	       23: DROP P6 HAB0 R2
-	       24: MOVE-FAST R2 HAB0 HAB1
-	       25: MOVE R2 HAB1 HAB0
-	       26: MOVE R1 HAB2 HAB1
-	       27: PICK P2 HAB0 R2
-	       28: MOVE-FAST R2 HAB0 HAB1
-	       29: MOVE R2 HAB1 HAB2
-	       30: DROP P2 HAB2 R2
-	       31: MOVE R1 HAB1 HAB2
-	       32: PICK P7 HAB2 R2
-	       33: MOVE R2 HAB2 HAB1
-	       34: MOVE R2 HAB1 HAB0
-	       35: DROP P7 HAB0 R2
-	       36: MOVE-FAST R2 HAB0 HAB1
-	       37: MOVE R2 HAB1 HAB0
-	       38: PICK P3 HAB0 R2
-	       39: MOVE-FAST R2 HAB0 HAB1
-	       40: MOVE-FAST R2 HAB1 HAB2
-	       41: DROP P3 HAB2 R2
-	       42: PICK P8 HAB2 R1
-	       43: MOVE R1 HAB2 HAB1
-	       44: MOVE R1 HAB1 HAB0
-	       45: DROP P8 HAB0 R1
-	       46: PICK P4 HAB0 R1
-	       47: MOVE-FAST R1 HAB0 HAB1
-	       48: MOVE R1 HAB1 HAB2
-	       49: DROP P4 HAB2 R1
-	       50: PICK P10 HAB2 R1
-	       51: MOVE R1 HAB2 HAB1
-	       52: MOVE R1 HAB1 HAB0
-	       53: DROP P10 HAB0 R1
-	       54: PICK P5 HAB0 R1
-	       55: MOVE-FAST R1 HAB0 HAB1
-	       56: MOVE R1 HAB1 HAB2
-	       57: DROP P5 HAB2 R1
+	        0: PICK P1 HAB0 R1
+	        1: MOVE-FAST R1 HAB0 HAB1 FL2 FL0
+	        2: MOVE-FAST R1 HAB1 HAB2 FL0 FL2
+	        3: DROP P1 HAB2 R1
+	        4: PICK P2 HAB2 R1
+	        5: MOVE R1 HAB2 HAB1 FL2 FL1
+	        6: MOVE R1 HAB1 HAB0 FL1 FL0
+	        7: DROP P2 HAB0 R1
+	        8: MOVE-FAST R1 HAB0 HAB1 FL0 FL2
 \end{bashcode}
+
+\section{Ejercicio 4}
+\label{sec:Ejercicio 4}
+
+\textit{Escribir un dominio de planificación en PDDL 2.1 que responda a los requisitos
+explicados en los anteriores ejercicios, utilizando las capacidades expresivas de PDDL
+2.1, es decir, representando funciones numéricas. Al igual que en los anteriores
+ejercicios, definir distintos problemas para comprobar que vuestro dominio es
+correcto.}
+
+\subsection{Dominio}
+\label{sub:Dominio}
+
+Éste dominio se ha especificado haciendo uso de funciones, (\newlispinline/:functions/). Para ello, se ha modificado el dominio1, añadiendo la siguiente función:
+
+\begin{newlispcode}
+	(:functions
+		(battery-left ?r - robot)
+	)
+\end{newlispcode}
+
+Que devolverá la cantidad de batería disponible.
+
+Además, la acción \newlispinline/move/ se ha modificado para que modifique el nivel de batería de un robot, en su precondición se exige que el nivel de batería tenga un valor mínimo \newlispinline/(>= (battery-left ?r) 2)/, y como efecto, se decrementa el nivel de batería en un valor \newlispinline/(decrease (battery-left ?r) 2)/.
+
+Cuando el nivel de batería no permite al robot moverse, éste puede recargar la batería con la acción \newlispinline/charge/:
+
+\begin{newlispcode}
+  (:action charge
+    :parameters (?r - robot)
+    :precondition (< (battery-left ?r ) 2)
+    :effect (assign (battery-left ?r ) 10)
+  )
+\end{newlispcode}
+
+Ésta acción requiere que el nivel de batería sea menor que 2, y asigna un valor de 10 a la carga.
+
+El código completo del dominio es:
+
+\lispscript{../d4.pddl}{d4.pddl}
+
+\subsection{Problema}
+\label{sub:Problema}
+
+Para éste problema se han especificado tres robots, diez paquetes y cuatro habitaciones, cada robot con la batería cargada a 100 unidades:
+
+\lispscript{../p0e4.pddl}{p0e4.pddl}
+
+El plan trazado:
+
+\begin{bashcode}
+        0: PICK P9 HAB4 R3
+        1: MOVE-FAST R3 HAB4 HAB3
+        2: MOVE-FAST R1 HAB0 HAB1
+        3: MOVE-FAST R2 HAB0 HAB1
+        4: MOVE R1 HAB1 HAB2
+        5: MOVE-FAST R3 HAB3 HAB1
+        6: DROP P9 HAB1 R3
+        7: MOVE-FAST R3 HAB1 HAB3
+        8: MOVE-FAST R3 HAB3 HAB4
+        9: PICK P9 HAB1 R2
+       10: MOVE R2 HAB1 HAB0
+       11: DROP P9 HAB0 R2
+       12: MOVE-FAST R2 HAB0 HAB1
+       13: MOVE R2 HAB1 HAB0
+       14: MOVE R1 HAB2 HAB1
+       15: PICK P1 HAB0 R2
+       16: MOVE-FAST R2 HAB0 HAB1
+       17: MOVE R2 HAB1 HAB2
+       18: DROP P1 HAB2 R2
+       19: MOVE R1 HAB1 HAB2
+       20: PICK P6 HAB2 R2
+       21: MOVE R2 HAB2 HAB1
+       22: MOVE R2 HAB1 HAB0
+       23: DROP P6 HAB0 R2
+       24: MOVE-FAST R2 HAB0 HAB1
+       25: MOVE R2 HAB1 HAB0
+       26: MOVE R1 HAB2 HAB1
+       27: PICK P2 HAB0 R2
+       28: MOVE-FAST R2 HAB0 HAB1
+       29: MOVE R2 HAB1 HAB2
+       30: DROP P2 HAB2 R2
+       31: MOVE R1 HAB1 HAB2
+       32: PICK P7 HAB2 R2
+       33: MOVE R2 HAB2 HAB1
+       34: MOVE R2 HAB1 HAB0
+       35: DROP P7 HAB0 R2
+       36: MOVE-FAST R2 HAB0 HAB1
+       37: MOVE R2 HAB1 HAB0
+       38: PICK P3 HAB0 R2
+       39: MOVE-FAST R2 HAB0 HAB1
+       40: MOVE-FAST R2 HAB1 HAB2
+       41: DROP P3 HAB2 R2
+       42: PICK P8 HAB2 R1
+       43: MOVE R1 HAB2 HAB1
+       44: MOVE R1 HAB1 HAB0
+       45: DROP P8 HAB0 R1
+       46: PICK P4 HAB0 R1
+       47: MOVE-FAST R1 HAB0 HAB1
+       48: MOVE R1 HAB1 HAB2
+       49: DROP P4 HAB2 R1
+       50: PICK P10 HAB2 R1
+       51: MOVE R1 HAB2 HAB1
+       52: MOVE R1 HAB1 HAB0
+       53: DROP P10 HAB0 R1
+       54: PICK P5 HAB0 R1
+       55: MOVE-FAST R1 HAB0 HAB1
+       56: MOVE R1 HAB1 HAB2
+       57: DROP P5 HAB2 R1
+\end{bashcode}
+
 \end{document}
