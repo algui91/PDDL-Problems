@@ -19,17 +19,21 @@
 \usepackage{subfig}													% Subfigures
 \usepackage{booktabs}												% Nicer tables
 \usepackage{fix-cm}													% Custom fontsizes
-\usepackage[utf8]{inputenc}
 \usepackage{hyperref}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[light,math]{kurier}
+
 
 %%% Custom sectioning (sectsty package)
 \usepackage{sectsty}													% Custom sectioning (see below)
 \allsectionsfont{%															% Change font of al section commands
-	\usefont{OT1}{phv}{b}{n}%										% bch-b-n: CharterBT-Bold font
+	\usefont{T1}{mdugm}{b}{it}%										% bch-b-n: CharterBT-Bold font
 	}
 
 \sectionfont{%																% Change font of \section command
-	\usefont{OT1}{phv}{b}{n}%										% bch-b-n: CharterBT-Bold font
+	\usefont{T1}{mdugm}{b}{it}%										% bch-b-n: CharterBT-Bold font
 	}
 
 %%% Headers and footers
@@ -42,9 +46,9 @@
 \chead{}
 \rhead{}
 % Footer (you may change this to your own needs)
-\lfoot{\footnotesize \texttt{Alejandro Alcalde Barros} \textbullet ~}
+\lfoot{\footnotesize \miit{Alejandro Alcalde Barros} \textbullet ~}
 \cfoot{}
-\rfoot{\footnotesize página \thepage\ de \pageref{LastPage}}	% "Page 1 of 2"
+\rfoot{\footnotesize Página \thepage\ de \pageref{LastPage}}	% "Page 1 of 2"
 \renewcommand{\headrulewidth}{0.0pt}
 \renewcommand{\footrulewidth}{0.4pt}
 
@@ -67,23 +71,21 @@
 										}
 
 \pretitle{\vspace{-30pt} \begin{flushleft} \HorRule
-				\fontsize{50}{50} \usefont{OT1}{phv}{b}{n} \color{DarkRed} \selectfont
+				\fontsize{50}{50} \usefont{T1}{kurier}{l}{it} \color{DarkRed} \selectfont
 				}
 \title{Memoria Relación de Ejercicios PDDL}					% Title of your article goes here
 \posttitle{\par\end{flushleft}\vskip 0.5em}
 
 \preauthor{\begin{flushleft}
-					\large \lineskip 0.5em \usefont{OT1}{phv}{b}{sl} \color{DarkRed}}
+					\large \lineskip 0.5em \usefont{T1}{mdugm}{m}{it} \color{DarkRed}}
 \author{Alejandro Alcalde, }											% Author name goes here
-\postauthor{\footnotesize \usefont{OT1}{phv}{m}{sl} \color{Black}
+\postauthor{\footnotesize \usefont{OT1}{mdugm}{m}{it} \color{Black}
 					Universidad de Granada 								% Institution of author
 					\par\end{flushleft}\HorRule}
 
-\date{\textit{\today}}																				% No date
+\date{\usefont{T1}{mdugm}{b}{it}\selectfont\today}																				% No date
 
-\usepackage[T1]{fontenc}
-\usepackage[utf8]{inputenc}
-\usepackage[light,math]{kurier}
+\newcommand{\miit}[1]{{\usefont{T1}{mdugm}{m}{it}\selectfont #1}}
 
 \usepackage{minted}
 
@@ -94,6 +96,7 @@
 		framesep=2mm,
 		fontsize=\scriptsize,
 		tabsize=2,
+		fontfamily=DejaVuSansMono-TLF,
 }
 
 \newminted{newlisp}{
@@ -103,6 +106,7 @@
 		framesep=2mm,
 		fontsize=\scriptsize,
 		tabsize=2,
+		fontfamily=DejaVuSansMono-TLF,
 }
 
 \newmintedfile[myLisp]{newlisp}{
@@ -113,13 +117,14 @@
     framesep=2mm,
     fontsize=\scriptsize,
 		tabsize=2,
-		% fontfamily=kurier,
+		fontfamily=DejaVuSansMono-TLF,
 }
-\newmintinline{newlisp}{fontsize=\scriptsize, fontfamily=kurier}
 
 \newcommand{\lispscript}[2]{
     \myLisp[label=#2]{#1}
 }
+
+\newmintinline{newlisp}{fontsize=\scriptsize, fontfamily=DejaVuSansMono-TLF}
 
 %%% Begin document
 \begin{document}
@@ -130,7 +135,7 @@
 
 \section{Ejercicio 1}
 
-\textit{Escribir un dominio de planificación en PDDL para que un planificador pueda encontrar planes de actuación para uno o varios robots como
+\miit{Escribir un dominio de planificación en PDDL para que un planificador pueda encontrar planes de actuación para uno o varios robots como
 soluciones a problemas de distribución de paquetes entre habitaciones.}
 
 \subsection{Representación de los objetos}
@@ -225,7 +230,7 @@ El plan calculado es:
 
 \section{Ejercicio 2}
 
-\textit{Escribir un dominio de planificación en PDDL, modificando el dominio del anterior
+\miit{Escribir un dominio de planificación en PDDL, modificando el dominio del anterior
 ejercicio, de tal manera que se tenga en cuenta que la acción de moverse de una
 habitación a otra consume una cantidad de batería y, por tanto, requiere que el robot
 tenga nivel de batería para moverse. Además, considerar que hay una nueva acción de
@@ -322,7 +327,7 @@ El plan generado:
 \section{Ejercicio 3}
 \label{sec:Ejercicio 3}
 
-\textit{Escribir un dominio de planificación en PDDL, modificando el dominio del anterior
+\miit{Escribir un dominio de planificación en PDDL, modificando el dominio del anterior
 ejercicio, de manera que se puedan utilizar ahora dos acciones diferentes, moverse
 rápido y moverse lento tales que moverse rápido consume más unidades de fuel que
 moverse lento. Probarlo con varios problemas.}
@@ -376,7 +381,7 @@ Y el plan generado:
 \section{Ejercicio 4}
 \label{sec:Ejercicio 4}
 
-\textit{Escribir un dominio de planificación en PDDL 2.1 que responda a los requisitos
+\miit{Escribir un dominio de planificación en PDDL 2.1 que responda a los requisitos
 explicados en los anteriores ejercicios, utilizando las capacidades expresivas de PDDL
 2.1, es decir, representando funciones numéricas. Al igual que en los anteriores
 ejercicios, definir distintos problemas para comprobar que vuestro dominio es
