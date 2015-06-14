@@ -4,6 +4,7 @@
 	r1 r2 r3 - robot
 	p1 p2 p3 p4 p5 p6 p7 p8 p9 p10 - paquete
 	hab0 hab1 hab2 hab3 hab4 - habitacion
+	fl1 fl2 fl0 - flevel
 	)
 (:init
 	(at r1 hab0)
@@ -22,9 +23,18 @@
 	(free r1)
 	(free r2)
 	(free r3)
-	(= (battery-left r1 ) 100)
-	(= (battery-left r2 ) 100)
-	(= (battery-left r3 ) 100)
+
+	(batterylevel r1 fl2)
+	(batterylevel r2 fl2)
+	(batterylevel r3 fl2)
+
+	(cambio fl2 fl1)
+	(cambio fl1 fl0)
+	(cambio fl0 fl2)
+
+	(cambio-fast fl2 fl0)
+	(cambio-fast fl0 fl2)
+
 	(conectada hab0 hab1)
 	(conectada hab1 hab0)
 	(conectada hab2 hab1)

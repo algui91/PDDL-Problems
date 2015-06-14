@@ -242,9 +242,10 @@ hay un fichero ejemplo de un problema para este tipo de dominio.}
 \subsection{Dominio}
 \label{sub:Dominio}
 
-En éste dominio se ha definido un nuevo objeto \newlispinline/flevel/, que representará los niveles de batería del robot.
+En éste dominio se ha definido un nuevo objeto \newlispinline/flevel/, que representará los niveles de batería del robot. Influye únicamente
+en que habrá que especificar en el problema cuales son los saltos de un nivel a otro.
 
-Además, se han añadido dos predicados nuevos, \newlispinline/cambio( ?n1 ?n2 - flevel)/ y \newlispinline/(batterylevel ?r - robot ?f - flevel)/. El primero realizará el cambio de una batería por otra. El segundo especifica el nivel de batería del robot \newlispinline/?r/.
+Se han añadido dos predicados nuevos, \newlispinline/cambio( ?n1 ?n2 - flevel)/ y\\ \newlispinline/(batterylevel ?r - robot ?f - flevel)/. El primero realizará el cambio de una batería por otra. El segundo especifica el nivel de batería del robot \newlispinline/?r/.
 
 En la acción \newlispinline/move/:
 
@@ -254,7 +255,7 @@ En la acción \newlispinline/move/:
 	\item Como efecto, \newlispinline/(not (batterylevel ?r ?bbefore))/ establece que el nivel de batería del robot ya no es el mismo que tenía antes de ejecutar la acción, y \newlispinline/(batterylevel ?r ?bafter)/ establece el nivel actual a \newlispinline/?bafter/
 \end{itemize}
 
-\lispscript{../d2.1.pddl}{Dominio2.pddl}
+\lispscript{../d2.pddl}{Dominio2.pddl}
 
 \subsection{Problema}
 \label{sub:Problema}
@@ -266,62 +267,70 @@ El problema definido para éste dominio consiste en 2 robots, 10 paquetes y 4 ha
 El plan generado:
 
 \begin{bashcode}
-	        0: CHARGE R2
-	        1: CHARGE R1
-	        2: MOVE R1 HAB0 HAB1
-	        3: MOVE R2 HAB0 HAB1
-	        4: MOVE R1 HAB1 HAB2
-	        5: MOVE R2 HAB1 HAB0
-	        6: MOVE R1 HAB2 HAB1
-	        7: PICK P1 HAB0 R2
-	        8: MOVE R2 HAB0 HAB1
-	        9: MOVE R2 HAB1 HAB2
-	       10: DROP P1 HAB2 R2
-	       11: MOVE R1 HAB1 HAB2
-	       12: PICK P6 HAB2 R2
-	       13: MOVE R2 HAB2 HAB1
-	       14: CHARGE R2
-	       15: MOVE R2 HAB1 HAB0
-	       16: DROP P6 HAB0 R2
-	       17: MOVE R2 HAB0 HAB1
-	       18: MOVE R2 HAB1 HAB0
-	       19: PICK P2 HAB0 R2
-	       20: MOVE R2 HAB0 HAB1
-	       21: MOVE R2 HAB1 HAB2
-	       22: DROP P2 HAB2 R2
-	       23: PICK P7 HAB2 R1
-	       24: MOVE R1 HAB2 HAB1
-	       25: CHARGE R1
-	       26: MOVE R1 HAB1 HAB0
-	       27: DROP P7 HAB0 R1
-	       28: PICK P3 HAB0 R1
-	       29: MOVE R1 HAB0 HAB1
-	       30: MOVE R1 HAB1 HAB2
-	       31: DROP P3 HAB2 R1
-	       32: PICK P8 HAB2 R1
-	       33: MOVE R1 HAB2 HAB1
-	       34: MOVE R1 HAB1 HAB0
-	       35: CHARGE R1
-	       36: DROP P8 HAB0 R1
-	       37: PICK P4 HAB0 R1
-	       38: MOVE R1 HAB0 HAB1
-	       39: MOVE R1 HAB1 HAB2
-	       40: DROP P4 HAB2 R1
-	       41: PICK P9 HAB2 R1
-	       42: MOVE R1 HAB2 HAB1
-	       43: MOVE R1 HAB1 HAB0
-	       44: DROP P9 HAB0 R1
-	       45: PICK P5 HAB0 R1
-	       46: MOVE R1 HAB0 HAB1
-	       47: CHARGE R1
-	       48: MOVE R1 HAB1 HAB2
-	       49: DROP P5 HAB2 R1
-	       50: PICK P10 HAB2 R1
-	       51: MOVE R1 HAB2 HAB1
-	       52: MOVE R1 HAB1 HAB0
-	       53: DROP P10 HAB0 R1
-	       54: MOVE R1 HAB0 HAB1
-	       55: MOVE R1 HAB1 HAB2
+0: MOVE R1 HAB0 HAB1 FL2 FL1
+1: MOVE R2 HAB0 HAB1 FL2 FL1
+2: MOVE R1 HAB1 HAB2 FL1 FL0
+3: MOVE R2 HAB1 HAB0 FL1 FL0
+4: MOVE R1 HAB2 HAB1 FL0 FL2
+5: PICK P1 HAB0 R2
+6: MOVE R2 HAB0 HAB1 FL0 FL2
+7: MOVE R2 HAB1 HAB2 FL2 FL1
+8: DROP P1 HAB2 R2
+9: MOVE R1 HAB1 HAB2 FL2 FL1
+10: PICK P6 HAB2 R2
+11: MOVE R2 HAB2 HAB1 FL1 FL0
+12: MOVE R2 HAB1 HAB0 FL0 FL2
+13: DROP P6 HAB0 R2
+14: MOVE R2 HAB0 HAB1 FL2 FL1
+15: MOVE R2 HAB1 HAB0 FL1 FL0
+16: MOVE R1 HAB2 HAB1 FL1 FL0
+17: PICK P2 HAB0 R2
+18: MOVE R2 HAB0 HAB1 FL0 FL2
+19: MOVE R2 HAB1 HAB2 FL2 FL1
+20: DROP P2 HAB2 R2
+21: MOVE R1 HAB1 HAB2 FL0 FL2
+22: PICK P7 HAB2 R2
+23: MOVE R2 HAB2 HAB1 FL1 FL0
+24: MOVE R2 HAB1 HAB0 FL0 FL2
+25: DROP P7 HAB0 R2
+26: MOVE R2 HAB0 HAB1 FL2 FL1
+27: MOVE R2 HAB1 HAB0 FL1 FL0
+28: MOVE R1 HAB2 HAB1 FL2 FL1
+29: PICK P3 HAB0 R2
+30: MOVE R2 HAB0 HAB1 FL0 FL2
+31: MOVE R2 HAB1 HAB2 FL2 FL1
+32: DROP P3 HAB2 R2
+33: MOVE R1 HAB1 HAB2 FL1 FL0
+34: PICK P8 HAB2 R2
+35: MOVE R2 HAB2 HAB1 FL1 FL0
+36: MOVE R2 HAB1 HAB0 FL0 FL2
+37: DROP P8 HAB0 R2
+38: MOVE R2 HAB0 HAB1 FL2 FL1
+39: MOVE R2 HAB1 HAB0 FL1 FL0
+40: MOVE R1 HAB2 HAB1 FL0 FL2
+41: PICK P4 HAB0 R2
+42: MOVE R2 HAB0 HAB1 FL0 FL2
+43: MOVE R2 HAB1 HAB2 FL2 FL1
+44: DROP P4 HAB2 R2
+45: MOVE R1 HAB1 HAB2 FL2 FL1
+46: MOVE R2 HAB2 HAB1 FL1 FL0
+47: MOVE R2 HAB1 HAB0 FL0 FL2
+48: PICK P5 HAB0 R2
+49: MOVE R2 HAB0 HAB1 FL2 FL1
+50: MOVE R2 HAB1 HAB2 FL1 FL0
+51: DROP P5 HAB2 R2
+52: PICK P9 HAB2 R2
+53: MOVE R2 HAB2 HAB1 FL0 FL2
+54: MOVE R2 HAB1 HAB0 FL2 FL1
+55: PICK P10 HAB2 R1
+56: DROP P9 HAB0 R2
+57: MOVE R2 HAB0 HAB1 FL1 FL0
+58: MOVE R2 HAB1 HAB2 FL0 FL2
+59: MOVE R1 HAB2 HAB1 FL1 FL0
+60: MOVE R1 HAB1 HAB0 FL0 FL2
+61: DROP P10 HAB0 R1
+62: MOVE R1 HAB0 HAB1 FL2 FL1
+63: MOVE R1 HAB1 HAB2 FL1 FL0
 \end{bashcode}
 
 \section{Ejercicio 3}
@@ -360,22 +369,75 @@ Y un predicado \newlispinline/(cambio-fast ?n1 ?n2 - flevel)/.
 \subsection{Problema}
 \label{sub:Problema}
 
-El problema tiene un robot, y los niveles de batería del 0 al 2.
+El problema tiene tres robots, cuatro habitaciones, diez paquetes y los niveles de batería del 0 al 2.
 
-\lispscript{../p0e3.pddl}{p0e3.pddl}
+\lispscript{../p1e3.pddl}{p1e3.pddl}
 
 Y el plan generado:
 
 \begin{bashcode}
-	        0: PICK P1 HAB0 R1
-	        1: MOVE-FAST R1 HAB0 HAB1 FL2 FL0
-	        2: MOVE-FAST R1 HAB1 HAB2 FL0 FL2
-	        3: DROP P1 HAB2 R1
-	        4: PICK P2 HAB2 R1
-	        5: MOVE R1 HAB2 HAB1 FL2 FL1
-	        6: MOVE R1 HAB1 HAB0 FL1 FL0
-	        7: DROP P2 HAB0 R1
-	        8: MOVE-FAST R1 HAB0 HAB1 FL0 FL2
+	        0: PICK P9 HAB4 R3
+	        1: MOVE-FAST R3 HAB4 HAB3 FL2 FL0
+	        2: MOVE-FAST R1 HAB0 HAB1 FL2 FL0
+	        3: MOVE-FAST R2 HAB0 HAB1 FL2 FL0
+	        4: MOVE-FAST R1 HAB1 HAB2 FL0 FL2
+	        5: MOVE-FAST R3 HAB3 HAB1 FL0 FL2
+	        6: DROP P9 HAB1 R3
+	        7: MOVE-FAST R3 HAB1 HAB3 FL2 FL0
+	        8: MOVE-FAST R3 HAB3 HAB4 FL0 FL2
+	        9: PICK P9 HAB1 R2
+	       10: MOVE-FAST R2 HAB1 HAB0 FL0 FL2
+	       11: DROP P9 HAB0 R2
+	       12: MOVE R1 HAB2 HAB1 FL2 FL1
+	       13: PICK P1 HAB0 R2
+	       14: MOVE-FAST R2 HAB0 HAB1 FL2 FL0
+	       15: MOVE-FAST R2 HAB1 HAB2 FL0 FL2
+	       16: DROP P1 HAB2 R2
+	       17: MOVE R1 HAB1 HAB2 FL1 FL0
+	       18: PICK P6 HAB2 R2
+	       19: MOVE R2 HAB2 HAB1 FL2 FL1
+	       20: MOVE R2 HAB1 HAB0 FL1 FL0
+	       21: DROP P6 HAB0 R2
+	       22: MOVE-FAST R2 HAB0 HAB1 FL0 FL2
+	       23: MOVE R2 HAB1 HAB0 FL2 FL1
+	       24: MOVE-FAST R1 HAB2 HAB1 FL0 FL2
+	       25: PICK P2 HAB0 R2
+	       26: MOVE R2 HAB0 HAB1 FL1 FL0
+	       27: MOVE-FAST R2 HAB1 HAB2 FL0 FL2
+	       28: DROP P2 HAB2 R2
+	       29: MOVE R1 HAB1 HAB2 FL2 FL1
+	       30: PICK P7 HAB2 R2
+	       31: MOVE R2 HAB2 HAB1 FL2 FL1
+	       32: MOVE R2 HAB1 HAB0 FL1 FL0
+	       33: DROP P7 HAB0 R2
+	       34: MOVE-FAST R2 HAB0 HAB1 FL0 FL2
+	       35: MOVE R2 HAB1 HAB0 FL2 FL1
+	       36: MOVE R1 HAB2 HAB1 FL1 FL0
+	       37: PICK P3 HAB0 R2
+	       38: MOVE R2 HAB0 HAB1 FL1 FL0
+	       39: MOVE-FAST R2 HAB1 HAB2 FL0 FL2
+	       40: DROP P3 HAB2 R2
+	       41: MOVE-FAST R1 HAB1 HAB2 FL0 FL2
+	       42: PICK P8 HAB2 R2
+	       43: MOVE R2 HAB2 HAB1 FL2 FL1
+	       44: MOVE R2 HAB1 HAB0 FL1 FL0
+	       45: DROP P8 HAB0 R2
+	       46: MOVE-FAST R2 HAB0 HAB1 FL0 FL2
+	       47: MOVE R2 HAB1 HAB2 FL2 FL1
+	       48: PICK P10 HAB2 R2
+	       49: MOVE R2 HAB2 HAB1 FL1 FL0
+	       50: MOVE-FAST R2 HAB1 HAB0 FL0 FL2
+	       51: DROP P10 HAB0 R2
+	       52: PICK P4 HAB0 R2
+	       53: MOVE-FAST R2 HAB0 HAB1 FL2 FL0
+	       54: MOVE-FAST R2 HAB1 HAB2 FL0 FL2
+	       55: DROP P4 HAB2 R2
+	       56: MOVE R2 HAB2 HAB1 FL2 FL1
+	       57: MOVE R2 HAB1 HAB0 FL1 FL0
+	       58: PICK P5 HAB0 R2
+	       59: MOVE-FAST R2 HAB0 HAB1 FL0 FL2
+	       60: MOVE R2 HAB1 HAB2 FL2 FL1
+	       61: DROP P5 HAB2 R2
 \end{bashcode}
 
 \section{Ejercicio 4}
@@ -428,64 +490,73 @@ Para éste problema se han especificado tres robots, diez paquetes y cuatro habi
 El plan trazado:
 
 \begin{bashcode}
-        0: PICK P9 HAB4 R3
-        1: MOVE-FAST R3 HAB4 HAB3
-        2: MOVE-FAST R1 HAB0 HAB1
-        3: MOVE-FAST R2 HAB0 HAB1
-        4: MOVE R1 HAB1 HAB2
-        5: MOVE-FAST R3 HAB3 HAB1
-        6: DROP P9 HAB1 R3
-        7: MOVE-FAST R3 HAB1 HAB3
-        8: MOVE-FAST R3 HAB3 HAB4
-        9: PICK P9 HAB1 R2
-       10: MOVE R2 HAB1 HAB0
-       11: DROP P9 HAB0 R2
-       12: MOVE-FAST R2 HAB0 HAB1
-       13: MOVE R2 HAB1 HAB0
-       14: MOVE R1 HAB2 HAB1
-       15: PICK P1 HAB0 R2
-       16: MOVE-FAST R2 HAB0 HAB1
-       17: MOVE R2 HAB1 HAB2
-       18: DROP P1 HAB2 R2
-       19: MOVE R1 HAB1 HAB2
-       20: PICK P6 HAB2 R2
-       21: MOVE R2 HAB2 HAB1
-       22: MOVE R2 HAB1 HAB0
-       23: DROP P6 HAB0 R2
-       24: MOVE-FAST R2 HAB0 HAB1
-       25: MOVE R2 HAB1 HAB0
-       26: MOVE R1 HAB2 HAB1
-       27: PICK P2 HAB0 R2
-       28: MOVE-FAST R2 HAB0 HAB1
-       29: MOVE R2 HAB1 HAB2
-       30: DROP P2 HAB2 R2
-       31: MOVE R1 HAB1 HAB2
-       32: PICK P7 HAB2 R2
-       33: MOVE R2 HAB2 HAB1
-       34: MOVE R2 HAB1 HAB0
-       35: DROP P7 HAB0 R2
-       36: MOVE-FAST R2 HAB0 HAB1
-       37: MOVE R2 HAB1 HAB0
-       38: PICK P3 HAB0 R2
-       39: MOVE-FAST R2 HAB0 HAB1
-       40: MOVE-FAST R2 HAB1 HAB2
-       41: DROP P3 HAB2 R2
-       42: PICK P8 HAB2 R1
-       43: MOVE R1 HAB2 HAB1
-       44: MOVE R1 HAB1 HAB0
-       45: DROP P8 HAB0 R1
-       46: PICK P4 HAB0 R1
-       47: MOVE-FAST R1 HAB0 HAB1
-       48: MOVE R1 HAB1 HAB2
-       49: DROP P4 HAB2 R1
-       50: PICK P10 HAB2 R1
-       51: MOVE R1 HAB2 HAB1
-       52: MOVE R1 HAB1 HAB0
-       53: DROP P10 HAB0 R1
-       54: PICK P5 HAB0 R1
-       55: MOVE-FAST R1 HAB0 HAB1
-       56: MOVE R1 HAB1 HAB2
-       57: DROP P5 HAB2 R1
+	        0: PICK P9 HAB4 R3
+	        1: MOVE-FAST R3 HAB4 HAB3
+	        2: MOVE-FAST R1 HAB0 HAB1
+	        3: MOVE-FAST R2 HAB0 HAB1
+	        4: MOVE R1 HAB1 HAB2
+	        5: MOVE-FAST R3 HAB3 HAB1
+	        6: DROP P9 HAB1 R3
+	        7: MOVE-FAST R3 HAB1 HAB3
+	        8: MOVE-FAST R3 HAB3 HAB4
+	        9: PICK P9 HAB1 R2
+	       10: MOVE R2 HAB1 HAB0
+	       11: DROP P9 HAB0 R2
+	       12: MOVE-FAST R2 HAB0 HAB1
+	       13: MOVE R2 HAB1 HAB0
+	       14: MOVE R1 HAB2 HAB1
+	       15: PICK P1 HAB0 R2
+	       16: MOVE-FAST R2 HAB0 HAB1
+	       17: MOVE R2 HAB1 HAB2
+	       18: DROP P1 HAB2 R2
+	       19: MOVE R1 HAB1 HAB2
+	       20: PICK P6 HAB2 R2
+	       21: MOVE R2 HAB2 HAB1
+	       22: MOVE R2 HAB1 HAB0
+	       23: DROP P6 HAB0 R2
+	       24: MOVE R2 HAB0 HAB1
+	       25: MOVE R2 HAB1 HAB0
+	       26: MOVE R1 HAB2 HAB1
+	       27: PICK P2 HAB0 R2
+	       28: MOVE R2 HAB0 HAB1
+	       29: MOVE R2 HAB1 HAB2
+	       30: DROP P2 HAB2 R2
+	       31: MOVE R1 HAB1 HAB2
+	       32: PICK P7 HAB2 R2
+	       33: MOVE R2 HAB2 HAB1
+	       34: CHARGE R2
+	       35: MOVE R2 HAB1 HAB0
+	       36: DROP P7 HAB0 R2
+	       37: MOVE-FAST R2 HAB0 HAB1
+	       38: MOVE R2 HAB1 HAB0
+	       39: MOVE R1 HAB2 HAB1
+	       40: PICK P3 HAB0 R2
+	       41: MOVE R2 HAB0 HAB1
+	       42: MOVE R2 HAB1 HAB2
+	       43: DROP P3 HAB2 R2
+	       44: MOVE R1 HAB1 HAB2
+	       45: PICK P8 HAB2 R2
+	       46: MOVE R2 HAB2 HAB1
+	       47: MOVE R2 HAB1 HAB0
+	       48: DROP P8 HAB0 R2
+	       49: PICK P10 HAB2 R1
+	       50: MOVE R1 HAB2 HAB1
+	       51: MOVE R1 HAB1 HAB0
+	       52: DROP P10 HAB0 R1
+	       53: MOVE-FAST R1 HAB0 HAB1
+	       54: MOVE R1 HAB1 HAB2
+	       55: PICK P4 HAB0 R2
+	       56: MOVE R2 HAB0 HAB1
+	       57: CHARGE R2
+	       58: MOVE R2 HAB1 HAB2
+	       59: DROP P4 HAB2 R2
+	       60: MOVE R2 HAB2 HAB1
+	       61: MOVE R2 HAB1 HAB0
+	       62: PICK P5 HAB0 R2
+	       63: MOVE-FAST R2 HAB0 HAB1
+	       64: MOVE R2 HAB1 HAB2
+	       65: DROP P5 HAB2 R2
+
 \end{bashcode}
 
 \end{document}

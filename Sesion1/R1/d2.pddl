@@ -1,10 +1,10 @@
 (define (domain RobotDistribuidor)
 
-  (:requirements :typing :fluents)
+  (:requirements :typing)
   (:types objetofisico - object
 					cosas - objetofisico
 					paquete robot - cosas
-					habitacion)
+					habitacion flevel)
 
   (:predicates
 		;; Verdadero si ?r está en ?h
@@ -18,24 +18,28 @@
 
 		;; El robot lleva al paquete
     (carry ?p - paquete ?r - robot)
+
+    (cambio ?n1 ?n2 - flevel)
+    (batterylevel ?r - robot ?f - flevel)
   )
 
-  (:functions
-    (battery-left ?r - robot)
-  )
+
 
   ;; El robot se puede mover de una habitación a otra
   (:action move
-    :parameters (?r - robot ?from ?to - habitacion)
+    :parameters (?r - robot ?from ?to - habitacion ?bbefore ?bafter - flevel)
     :precondition (and
 										(at ?r ?from)
 										(conectada ?from ?to)
-                    (>= (battery-left ?r) 2)
-                    )
+                    (batterylevel ?r ?bbefore)
+                    (cambio ?bbefore ?bafter))
+
     :effect (and
 							(at ?r ?to)
               (not (at ?r ?from))
-              (decrease (battery-left ?r) 2))
+              (not (batterylevel ?r ?bbefore) )
+              (batterylevel ?r ?bafter)
+              )
   )
 
   ;; El robot puede coger ?obj en la habitación ?h
@@ -62,11 +66,4 @@
 							(free ?r)
     					(not (carry ?obj ?r)))
   )
-
-  (:action charge
-    :parameters (?r - robot)
-    :precondition (< (battery-left ?r ) 2)
-    :effect (assign (battery-left ?r ) 10)
-  )
-
 )
