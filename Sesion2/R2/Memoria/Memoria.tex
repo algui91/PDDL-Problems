@@ -1,0 +1,328 @@
+%%% LaTeX Template: Two column article
+%%%
+%%% Source: http://www.howtotex.com/
+%%% Feel free to distribute this template, but please keep to referal to http://www.howtotex.com/ here.
+%%% Date: February 2011
+
+%%% Preamble
+\documentclass[	DIV=calc,%
+							paper=a4,%
+							fontsize=11pt]{scrartcl}	 					% KOMA-article class
+
+\usepackage[spanish]{babel}										% English language/hyphenation
+\usepackage[protrusion=true,expansion=true]{microtype}				% Better typography
+\usepackage{amsmath,amsfonts,amsthm}					% Math packages
+%\usepackage[pdftex]{graphicx}									% Enable pdflatex
+\usepackage[svgnames]{xcolor}									% Enabling colors by their 'svgnames'
+\usepackage[hang, small,labelfont=bf,up,textfont=it,up]{caption}	% Custom captions under/above floats
+\usepackage{epstopdf}												% Converts .eps to .pdf
+\usepackage{subfig}													% Subfigures
+\usepackage{booktabs}												% Nicer tables
+\usepackage{fix-cm}													% Custom fontsizes
+\usepackage{hyperref}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[light,math]{kurier}
+
+
+%%% Custom sectioning (sectsty package)
+\usepackage{sectsty}													% Custom sectioning (see below)
+\allsectionsfont{%															% Change font of al section commands
+	\usefont{T1}{mdugm}{b}{it}%										% bch-b-n: CharterBT-Bold font
+	}
+
+\sectionfont{%																% Change font of \section command
+	\usefont{T1}{mdugm}{b}{it}%										% bch-b-n: CharterBT-Bold font
+	}
+
+%%% Headers and footers
+\usepackage{fancyhdr}												% Needed to define custom headers/footers
+	\pagestyle{fancy}														% Enabling the custom headers/footers
+\usepackage{lastpage}
+
+% Header (empty)
+\lhead{}
+\chead{}
+\rhead{}
+% Footer (you may change this to your own needs)
+\lfoot{\footnotesize \miit{Alejandro Alcalde Barros} \textbullet ~}
+\cfoot{}
+\rfoot{\footnotesize Página \thepage\ de \pageref{LastPage}}	% "Page 1 of 2"
+\renewcommand{\headrulewidth}{0.0pt}
+\renewcommand{\footrulewidth}{0.4pt}
+
+
+
+%%% Creating an initial of the very first character of the content
+\usepackage{lettrine}
+\newcommand{\initial}[1]{%
+     \lettrine[lines=3,lhang=0.3,nindent=0em]{
+     				\color{DarkGoldenrod}
+     				{\textsf{#1}}}{}}
+
+
+
+%%% Title, author and date metadata
+\usepackage{titling}															% For custom titles
+
+\newcommand{\HorRule}{\color{DarkGoldenrod}%			% Creating a horizontal rule
+									  	\rule{\linewidth}{1pt}%
+										}
+
+\pretitle{\vspace{-30pt} \begin{flushleft} \HorRule
+				\fontsize{50}{50} \usefont{T1}{kurier}{l}{it} \color{DarkRed} \selectfont
+				}
+\title{Memoria Relación de Ejercicios PDDL}					% Title of your article goes here
+\posttitle{\par\end{flushleft}\vskip 0.5em}
+
+\preauthor{\begin{flushleft}
+					\large \lineskip 0.5em \usefont{T1}{mdugm}{m}{it} \color{DarkRed}}
+\author{Alejandro Alcalde, }											% Author name goes here
+\postauthor{\footnotesize \usefont{OT1}{mdugm}{m}{it} \color{Black}
+					Universidad de Granada 								% Institution of author
+					\par\end{flushleft}\HorRule}
+
+\date{\usefont{T1}{mdugm}{b}{it}\selectfont\today}																				% No date
+
+\newcommand{\miit}[1]{{\usefont{T1}{mdugm}{m}{it}\selectfont #1}}
+
+\usepackage{minted}
+
+\newminted{bash}{
+		numbersep=5pt,
+		autogobble=true,
+		frame=lines,
+		framesep=2mm,
+		fontsize=\scriptsize,
+		tabsize=2,
+		fontfamily=DejaVuSansMono-TLF,
+}
+
+\newminted{newlisp}{
+		numbersep=5pt,
+		autogobble=true,
+		frame=lines,
+		framesep=2mm,
+		fontsize=\scriptsize,
+		tabsize=2,
+		fontfamily=DejaVuSansMono-TLF,
+}
+
+\newmintedfile[myLisp]{newlisp}{
+    linenos,
+    numbersep=5pt,
+		autogobble=true,
+    frame=lines,
+    framesep=2mm,
+    fontsize=\scriptsize,
+		tabsize=2,
+		fontfamily=DejaVuSansMono-TLF,
+}
+
+\newcommand{\lispscript}[2]{
+    \myLisp[label=#2]{#1}
+}
+
+\newmintinline{newlisp}{fontsize=\scriptsize, fontfamily=DejaVuSansMono-TLF}
+
+%%% Begin document
+\begin{document}
+\maketitle
+\thispagestyle{fancy} 			% Enabling the custom headers/footers for the first page
+% The first character should be within \initial{}
+\textbf{En ésta memoria se describe cómo se han planteado, y resuelto, los distintos problemas propuestos sobre PDDL en la asignatura Técnicas de los Sisteas Inteligentes.}
+
+\section{Ejercicio 1}
+
+\miit{El siguiente problema a resolver (problema-zeno-V01.pddl) consiste en transportar 3 personas
+(inicialmente en las ciudades C1, C2 y C3) a la ciudad C5, considerando que el avión está en la ciudad C4.
+Se asume al igual que en el problema ejemplo que no hay restricciones de fuel.}\\
+
+La razón por la cual el dominio \newlispinline/problema-zeno-V01.pddl/ no resolvía el problema 1 residía en que no se había contemplado
+la posibilidad de que el avión estuviera inicialmente en una ciudad sin pasajeros. Es decir, la persona está en la ciudad de origen,
+pero el avión está en otra ciudad, distinta a la del pasajero y a la de destino.
+
+Se ha añadido un método a la tarea \newlispinline/transport-person/ para controlar esta situación:
+
+\begin{newlispcode}
+	;; La persona está en la ciudad de origen, pero el avión está en otra ciudad,
+	;; distinta a ?to y a ?from, la llamamos ?c2
+	(:method Case3
+		:precondition (
+			and
+				(at ?p - person ?from - city)
+				(at ?a - aircraft ?c2 - city)
+		)
+		:tasks (
+				;; Mueve el avión de donde está a la ciudad origen de la persona
+				(mover-avion ?a ?c2 ?from)
+				(board ?p ?a ?from)
+				(mover-avion ?a ?from ?to)
+				(debark ?p ?a ?to )
+		)
+	)
+\end{newlispcode}
+
+\subsection{Plan trazado}
+\label{sub:Plan trazado}
+
+\begin{bashcode}
+	:action (fly a1 c4 c1) start: 05/06/2007 08:00:00 end: 05/06/2007 23:00:00
+	:action (board p1 a1 c1) start: 05/06/2007 23:00:00 end: 06/06/2007 00:00:00
+	:action (fly a1 c1 c5) start: 06/06/2007 00:00:00 end: 06/06/2007 10:00:00
+	:action (debark p1 a1 c5) start: 06/06/2007 10:00:00 end: 06/06/2007 11:00:00
+	:action (fly a1 c5 c2) start: 06/06/2007 11:00:00 end: 07/06/2007 02:00:00
+	:action (board p2 a1 c2) start: 07/06/2007 02:00:00 end: 07/06/2007 03:00:00
+	:action (fly a1 c2 c5) start: 07/06/2007 03:00:00 end: 07/06/2007 18:00:00
+	:action (debark p2 a1 c5) start: 07/06/2007 18:00:00 end: 07/06/2007 19:00:00
+	:action (fly a1 c5 c3) start: 07/06/2007 19:00:00 end: 08/06/2007 10:00:00
+	:action (board p3 a1 c3) start: 08/06/2007 10:00:00 end: 08/06/2007 11:00:00
+	:action (fly a1 c3 c5) start: 08/06/2007 11:00:00 end: 09/06/2007 02:00:00
+	:action (debark p3 a1 c5) start: 09/06/2007 02:00:00 end: 09/06/2007 03:00:00
+\end{bashcode}
+
+
+\section{Ejercicio 2}
+\label{sec:Ejercicio 2}
+
+\miit{El problema 2 (fichero problema-zeno-V02.pddl) consiste en asumir que hay restricciones de fuel. El fuel
+inicial del avión es de 200 y la capacidad total de 300. Deben contemplarse ahora acciones de repostaje.
+La situación de partida de personas y avión es la misma que en el problema anterior.}\\
+
+Esta vez bastaba con añadir un nuevo método en la tarea \newlispinline/mover-avion/, dicha tarea permite al avión repostar combustible en la ciudad origen de no tener suficiente para volar al destino:
+\begin{newlispcode}
+  (:method fuel-insufuciente
+    ;; No hay combustible para ir de ?from a ?to en el avión ?a
+    :precondition ( not (hay-fuel ?a ?from ?to ))
+    :tasks (
+      (refuel ?a ?from)
+      (fly ?a ?from ?to)
+    )
+  )
+\end{newlispcode}
+
+\subsection{Plan trazado}
+\label{sub:Plan trazado}
+
+\begin{bashcode}
+	:action (fly a1 c4 c1) start: 05/06/2007 08:00:00 end: 05/06/2007 23:00:00
+	:action (board p1 a1 c1) start: 05/06/2007 23:00:00 end: 06/06/2007 00:00:00
+	:action (refuel a1 c1) start: 06/06/2007 00:00:00 end: 16/06/2007 10:00:00
+	:action (fly a1 c1 c5) start: 16/06/2007 10:00:00 end: 16/06/2007 20:00:00
+	:action (debark p1 a1 c5) start: 16/06/2007 20:00:00 end: 16/06/2007 21:00:00
+	:action (fly a1 c5 c2) start: 16/06/2007 21:00:00 end: 17/06/2007 12:00:00
+	:action (board p2 a1 c2) start: 17/06/2007 12:00:00 end: 17/06/2007 13:00:00
+	:action (refuel a1 c2) start: 17/06/2007 13:00:00 end: 27/06/2007 23:00:00
+	:action (fly a1 c2 c5) start: 27/06/2007 23:00:00 end: 28/06/2007 14:00:00
+	:action (debark p2 a1 c5) start: 28/06/2007 14:00:00 end: 28/06/2007 15:00:00
+	:action (fly a1 c5 c3) start: 28/06/2007 15:00:00 end: 29/06/2007 06:00:00
+	:action (board p3 a1 c3) start: 29/06/2007 06:00:00 end: 29/06/2007 07:00:00
+	:action (refuel a1 c3) start: 29/06/2007 07:00:00 end: 11/07/2007 19:00:00
+	:action (fly a1 c3 c5) start: 11/07/2007 19:00:00 end: 12/07/2007 10:00:00
+	:action (debark p3 a1 c5) start: 12/07/2007 10:00:00 end: 12/07/2007 11:00:00
+\end{bashcode}
+
+\section{Ejercicio 3}
+\label{sec:Ejercicio 3}
+
+\miit{Este problema (fichero problema-zeno-V03.pddl) consiste en considerar acciones de vuelo lento y
+rápido para tratar de transportar las personas lo más rápido posible con un límite de fuel. En el dominio
+se tienen que codificar los métodos y tareas de manera que se priorice el uso de acciones de velocidad
+rápida. El límite de fuel se define con la función (fuel-limit) y es asignado en el estado inicial a 1500. La
+suma total de fuel gastado en todos los transportes no puede superar 1500 unidades, pero el avión debe
+viajar siempre lo más rápido posible.}\\
+
+El código de ambos problemas anteriores se ha reutilizado en éste. Además, se ha añadido lo siguiente:
+
+\begin{itemize}
+	\item Se ha definido un límite en el gasto total de combustible, \newlispinline/(fuel-limit)/.
+	\item Ahora existen dos métodos de repostaje:
+	\begin{itemize}
+		\item \newlispinline/fuel-insufuciente-vuelo-rapido/, trata la casuística en la que no hay combustible suficiente para desplazarse a una velocidad rápida. Para ello, el límite de combustible debe ser menor que la cantidad usada hasta el momento más el coste de moverse de una ciudad a otra a velocidad alta
+		\item \newlispinline/fuel-insufuciente-/, trata el caso en el que no haya fuel suficiente para ir de una ciudad a otra, a velocidad lenta.
+	\end{itemize}
+	\item y dos modos de vuelo:
+	\begin{itemize}
+		\item \newlispinline/vuelo-rapido/, El fuel del avión debe ser mayor del que va a consumir al ir de una ciudad a otra a velocidad rápida, y el total usado a velocidad rápida no debe superar el límite.
+		\item \newlispinline/vuelo-lento/, debe haber combustible para ir de una ciudad a otra, y el total consumido no debe superar el límite.
+	\end{itemize}
+\end{itemize}
+
+A continuación se muestran los métodos
+
+\begin{newlispcode}
+;; Si no hay combustible
+(:method fuel-insufuciente
+	;; No hay combustible para ir de ?from a ?to en el avion ?a
+	:precondition ( not (hay-fuel ?a ?from ?to ))
+	:tasks (
+		(refuel ?a ?from)
+		(fly ?a ?from ?to)
+	)
+)
+(:method fuel-insufuciente-vuelo-rapido
+	:precondition (
+			and
+			(not (hay-fuel ?a ?from ?to))
+			(< (+ (+ (total-fuel-used)
+							(* (distance ?from ?to) (fast-burn ?a)) )
+						(capacity ?a)) (fuel-limit))
+	)
+	:tasks (
+			(refuel ?a ?from)
+			(zoom ?a ?from ?to)
+	)
+)
+;; Igual para el lento
+(:method vuelo-lento
+	:precondition (
+			and
+			(hay-fuel ?a ?from ?to)
+			(<  (+ (total-fuel-used)
+					(* (distance ?from ?to) (slow-burn ?a)))
+				(fuel-limit))
+	)
+	:tasks (
+			(fly ?a ?from ?to)
+	)
+)
+;; Hay combustible para ir rápido y el fuel gastado no supera el límite
+(:method vuelo-rapido
+	:precondition (
+			and
+			(>= (fuel ?a)
+				(*  (distance ?from ?to)
+						(fast-burn ?a)))
+			(< (+ (total-fuel-used)
+				(* (distance ?from ?to) (fast-burn ?a)))
+			(fuel-limit))
+	)
+	:tasks (
+			(zoom ?a ?from ?to)
+	)
+)
+\end{newlispcode}
+
+\subsection{Plan trazado}
+\label{sub:Plan trazado}
+
+\begin{bashcode}
+	:action (fly a1 c4 c1) start: 05/06/2007 08:00:00 end: 05/06/2007 23:00:00
+	:action (board p1 a1 c1) start: 05/06/2007 23:00:00 end: 06/06/2007 00:00:00
+	:action (refuel a1 c1) start: 06/06/2007 00:00:00 end: 16/06/2007 10:00:00
+	:action (zoom a1 c1 c5) start: 16/06/2007 10:00:00 end: 16/06/2007 15:00:00
+	:action (debark p1 a1 c5) start: 16/06/2007 15:00:00 end: 16/06/2007 16:00:00
+	:action (refuel a1 c5) start: 16/06/2007 16:00:00 end: 25/06/2007 00:00:00
+	:action (zoom a1 c5 c2) start: 25/06/2007 00:00:00 end: 25/06/2007 08:00:00
+	:action (board p2 a1 c2) start: 25/06/2007 08:00:00 end: 25/06/2007 09:00:00
+	:action (refuel a1 c2) start: 25/06/2007 09:00:00 end: 07/07/2007 21:00:00
+	:action (zoom a1 c2 c5) start: 07/07/2007 21:00:00 end: 08/07/2007 05:00:00
+	:action (debark p2 a1 c5) start: 08/07/2007 05:00:00 end: 08/07/2007 06:00:00
+	:action (refuel a1 c5) start: 08/07/2007 06:00:00 end: 20/07/2007 18:00:00
+	:action (fly a1 c5 c3) start: 20/07/2007 18:00:00 end: 21/07/2007 09:00:00
+	:action (board p3 a1 c3) start: 21/07/2007 09:00:00 end: 21/07/2007 10:00:00
+	:action (fly a1 c3 c5) start: 21/07/2007 10:00:00 end: 22/07/2007 01:00:00
+	:action (debark p3 a1 c5) start: 22/07/2007 01:00:00 end: 22/07/2007 02:00:00
+\end{bashcode}
+\end{document}
